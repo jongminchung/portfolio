@@ -56,3 +56,8 @@ dist/
 
 .cursor
 .serena
+
+### Intellij
+.idea/**
+!.idea/prettier.xml
+!.idea/biome.xml
