@@ -3,15 +3,20 @@ import { Collection } from "@acme/types";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight, Bookmark, FolderOpen } from "lucide-react";
+import RaindropBanner from "~/components/bookmarks/raindrop-banner";
 import PageHeading from "~/components/page-heading";
-import { getCollections } from "~/lib/raindrop";
+import { getCollections, isRaindropConfigured } from "~/lib/raindrop";
 import { seo } from "~/lib/seo";
 import { getBaseUrl } from "~/lib/utils";
 
 export const Route = createFileRoute("/(public)/bookmarks/")({
   loader: async () => {
-    const result = await getCollections();
-    return { collections: result.items };
+    const raindropConfigured = isRaindropConfigured();
+    const collectionsResult = await getCollections();
+    return {
+      collections: collectionsResult?.items ?? [],
+      raindropConfigured,
+    };
   },
   component: RouteComponent,
   head: () => {
@@ -49,7 +54,7 @@ const itemVariants = {
 };
 
 function RouteComponent() {
-  const { collections } = Route.useLoaderData();
+  const { collections, raindropConfigured } = Route.useLoaderData();
 
   return (
     <>
@@ -57,6 +62,8 @@ function RouteComponent() {
         description="Discoveries from the World Wide Web"
         title="Bookmarks"
       />
+
+      {!raindropConfigured && <RaindropBanner />}
 
       <motion.div
         animate="visible"

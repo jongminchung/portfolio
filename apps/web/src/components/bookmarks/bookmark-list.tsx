@@ -5,8 +5,9 @@ import LoadMore from "~/components/bookmarks/load-more";
 import { PAGE_SIZE } from "~/lib/raindrop";
 
 type BookmarkListProps = {
-  id: number;
+  id: string;
   initialBookmarks: Bookmark[];
+  isRaindropConfigured: boolean;
 };
 
 const containerVariants = {
@@ -31,8 +32,10 @@ const itemVariants = {
 export default function BookmarkList({
   id,
   initialBookmarks,
+  isRaindropConfigured,
 }: Readonly<BookmarkListProps>) {
-  const isLoadMoreEnabled = PAGE_SIZE <= initialBookmarks.length;
+  const isLoadMoreEnabled =
+    isRaindropConfigured && PAGE_SIZE <= initialBookmarks.length;
 
   return (
     <div className="space-y-8">

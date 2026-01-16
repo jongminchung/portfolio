@@ -28,12 +28,13 @@ function calculateStartDate(months: number): Date {
 
 // Helper function to process monthly data into continuous range
 function processMonthlyData(
-  result: { rows: Record<string, unknown>[] },
+  result: Record<string, unknown>[] | { rows: Record<string, unknown>[] },
   start: Date,
   months: number
 ): { month: string; count: number }[] {
   const monthCounts = new Map<string, number>();
-  for (const row of result.rows as {
+  const rows = Array.isArray(result) ? result : result.rows;
+  for (const row of rows as {
     month: string;
     count: number;
   }[]) {

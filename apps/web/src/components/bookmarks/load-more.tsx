@@ -6,7 +6,7 @@ import BookmarkCard from "~/components/bookmarks/bookmark-card";
 import { getBookmarksByCollectionId, PAGE_SIZE } from "~/lib/raindrop";
 
 type LoadMoreProps = {
-  id: number;
+  id: string;
 };
 
 export default function LoadMore({ id }: Readonly<LoadMoreProps>) {
@@ -32,6 +32,12 @@ export default function LoadMore({ id }: Readonly<LoadMoreProps>) {
             pageIndex,
           },
         });
+
+        if (!(newBookmarks && Array.isArray(newBookmarks.items))) {
+          setIsReachingEnd(true);
+          setIsLoading(false);
+          return;
+        }
 
         if (PAGE_SIZE > newBookmarks.items.length) {
           setIsReachingEnd(true);

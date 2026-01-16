@@ -1,21 +1,20 @@
-import { neon } from "@neondatabase/serverless";
-import { upstashCache } from "drizzle-orm/cache/upstash";
-import { drizzle } from "drizzle-orm/neon-http";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import { env } from "../env";
+import { DrizzlePostgresCache } from "./cache-drizzle";
 // biome-ignore lint/performance/noNamespaceImport: valid import
 import * as schema from "./schema";
 
-const driver = neon(env.DATABASE_URL);
-
-const cache = upstashCache({
-  url: env.KV_REST_API_URL,
-  token: env.KV_REST_API_TOKEN,
-  global: true,
-  config: { ex: 60 },
+const sql = postgres(env.DATABASE_URL, {
+  max: 5,
 });
 
-export const db = drizzle({
-  client: driver,
+const cache = new DrizzlePostgresCache(sql, {
+  defaultTtlSeconds: 60,
+  global: true,
+});
+
+export const db = drizzle(sql, {
   schema,
   casing: "snake_case",
   cache,

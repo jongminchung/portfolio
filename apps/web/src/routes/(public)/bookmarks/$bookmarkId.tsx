@@ -2,11 +2,13 @@ import { siteConfig } from "@acme/config";
 import { Collection } from "@acme/types";
 import { createFileRoute } from "@tanstack/react-router";
 import BookmarkList from "~/components/bookmarks/bookmark-list";
+import RaindropBanner from "~/components/bookmarks/raindrop-banner";
 import PageHeading from "~/components/page-heading";
 import {
   getBookmarksByCollectionId,
   getCollection,
   getCollections,
+  isRaindropConfigured,
 } from "~/lib/raindrop";
 import { seo } from "~/lib/seo";
 import { getBaseUrl } from "~/lib/utils";
@@ -14,16 +16,17 @@ import { getBaseUrl } from "~/lib/utils";
 export const Route = createFileRoute("/(public)/bookmarks/$bookmarkId")({
   component: RouteComponent,
   loader: async ({ params }) => {
+    const raindropConfigured = isRaindropConfigured();
     const collections = await getCollections();
     if (!collections) {
-      return;
+      return { raindropConfigured };
     }
 
     const currentCollection = collections.items.find(
       (c: Collection) => c.slug === params.bookmarkId
     );
     if (!currentCollection) {
-      return;
+      return { raindropConfigured };
     }
 
     const [collection, bookmarks] = await Promise.all([
@@ -35,15 +38,15 @@ export const Route = createFileRoute("/(public)/bookmarks/$bookmarkId")({
       }),
     ]);
 
-    return { collection, bookmarks };
+    return { raindropConfigured, collection, bookmarks };
   },
   head: ({ loaderData }) => {
     const seoData = seo({
-      title: `${loaderData?.collection.item.title} | ${siteConfig.title}`,
+      title: `${loaderData?.collection?.item?.title} | ${siteConfig.title}`,
       description: "Discoveries from the World Wide Web",
       keywords: siteConfig.keywords,
-      url: `${getBaseUrl()}/bookmarks/${loaderData?.collection.item.slug}`,
-      canonical: `${getBaseUrl()}/bookmarks/${loaderData?.collection.item.slug}`,
+      url: `${getBaseUrl()}/bookmarks/${loaderData?.collection?.item?.slug}`,
+      canonical: `${getBaseUrl()}/bookmarks/${loaderData?.collection?.item?.slug}`,
     });
     return {
       meta: seoData.meta,
@@ -59,6 +62,18 @@ function RouteComponent() {
     return null;
   }
 
+  if (!(result.collection && result.bookmarks)) {
+    return (
+      <>
+        <PageHeading
+          description="Discoveries from the World Wide Web"
+          title="Bookmarks"
+        />
+        {!result.raindropConfigured && <RaindropBanner />}
+      </>
+    );
+  }
+
   const { collection, bookmarks } = result;
 
   return (
@@ -70,7 +85,8 @@ function RouteComponent() {
 
       <BookmarkList
         id={collection.item._id}
-        initialBookmarks={bookmarks.items}
+        initialBookmarks={bookmarks.items ?? []}
+        isRaindropConfigured={result.raindropConfigured}
       />
     </>
   );

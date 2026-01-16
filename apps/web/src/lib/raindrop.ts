@@ -5,19 +5,32 @@ import { env } from "./env/server";
 const RAINDROP_API_URL = "https://api.raindrop.io/rest/v1";
 export const PAGE_SIZE = 4;
 
-export const getOptions = createServerFn({ method: "GET" }).handler(() => ({
-  method: "GET",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${env.RAINDROP_ACCESS_TOKEN}`,
-  },
-  next: { revalidate: 0 },
-}));
+export const isRaindropConfigured = (): boolean =>
+  Boolean(env.RAINDROP_ACCESS_TOKEN);
+
+export const getOptions = createServerFn({ method: "GET" }).handler(() => {
+  if (!env.RAINDROP_ACCESS_TOKEN) {
+    console.warn("[service:raindrop] [level:warn] missing access token");
+    return null;
+  }
+
+  return {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${env.RAINDROP_ACCESS_TOKEN}`,
+    },
+    next: { revalidate: 0 },
+  };
+});
 
 export const getCollections = createServerFn({ method: "GET" }).handler(
   async () => {
     try {
       const options = await getOptions();
+      if (!options) {
+        return null;
+      }
       const response = await fetch(`${RAINDROP_API_URL}/collections`, options);
       return await response.json();
     } catch (_error) {
@@ -29,12 +42,15 @@ export const getCollections = createServerFn({ method: "GET" }).handler(
 export const getCollection = createServerFn({ method: "GET" })
   .inputValidator(
     z.object({
-      id: z.number(),
+      id: z.string(),
     })
   )
   .handler(async ({ data }) => {
     try {
       const options = await getOptions();
+      if (!options) {
+        return null;
+      }
       const response = await fetch(
         `${RAINDROP_API_URL}/collection/${data.id}`,
         options
@@ -49,13 +65,16 @@ export const getCollection = createServerFn({ method: "GET" })
 export const getBookmarksByCollectionId = createServerFn({ method: "GET" })
   .inputValidator(
     z.object({
-      collectionId: z.number(),
+      collectionId: z.string(),
       pageIndex: z.number().optional(),
     })
   )
   .handler(async ({ data }) => {
     try {
       const options = await getOptions();
+      if (!options) {
+        return null;
+      }
       const params = new URLSearchParams({
         page: String(data.pageIndex ?? 0),
         perpage: PAGE_SIZE.toString(),
@@ -66,6 +85,6 @@ export const getBookmarksByCollectionId = createServerFn({ method: "GET" })
       );
       return await response.json();
     } catch (_error) {
-      return [];
+      return null;
     }
   });

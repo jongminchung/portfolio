@@ -13,6 +13,11 @@ import sitemap from "./src/plugins/sitemap";
 
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
+const hasSentryConfig =
+  !!process.env.SENTRY_AUTH_TOKEN &&
+  !!process.env.SENTRY_ORG &&
+  !!process.env.SENTRY_PROJECT;
+
 export default defineConfig({
   build: {
     sourcemap: true,
@@ -62,15 +67,19 @@ export default defineConfig({
     }),
     tailwindcss(),
     generateSitemap(sitemap),
-    sentryVitePlugin({
-      authToken: process.env.SENTRY_AUTH_TOKEN,
-      org: process.env.SENTRY_ORG,
-      project: process.env.SENTRY_PROJECT,
-      telemetry: false,
-      sourcemaps: {
-        disable: false,
-      },
-    }),
+    ...(hasSentryConfig
+      ? [
+          sentryVitePlugin({
+            authToken: process.env.SENTRY_AUTH_TOKEN,
+            org: process.env.SENTRY_ORG,
+            project: process.env.SENTRY_PROJECT,
+            telemetry: false,
+            sourcemaps: {
+              disable: false,
+            },
+          }),
+        ]
+      : []),
   ],
   optimizeDeps: {
     entries: ["src/**/*.tsx", "src/**/*.ts"],
