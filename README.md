@@ -2,7 +2,7 @@
 
 ![Cover Image](apps/web/public/images/cover.avif)
 
-A modern full-stack portfolio monorepo built with Turborepo, TanStack Start, React 19, and TypeScript.
+A modern full-stack portfolio monorepo built with Bun workspaces, TanStack Start, React 19, and TypeScript.
 
 ## Features
 
@@ -29,7 +29,7 @@ A modern full-stack portfolio monorepo built with Turborepo, TanStack Start, Rea
 
 ## Tech Stack
 
-- [Turborepo](https://turbo.build/repo) - High-performance monorepo build system
+- [Bun](https://bun.sh/) workspaces - Monorepo package management and script orchestration
 - [React 19](https://react.dev) + [React Compiler](https://react.dev/learn/react-compiler) - Latest React with performance optimizations
 - TanStack [Start](https://tanstack.com/start/latest) + [Router](https://tanstack.com/router/latest) + [Query](https://tanstack.com/query/latest) + [Form](https://tanstack.com/form/latest) - Full-stack React framework
 - [Tailwind CSS v4](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/) - Modern styling and component library
@@ -77,6 +77,7 @@ A modern full-stack portfolio monorepo built with Turborepo, TanStack Start, Rea
    ```
 
 3. Create a `.env` file based on [`.env.example`](./.env.example)
+   - The example uses placeholder values so some features (auth, email, AI, analytics) may not work until you replace them.
 
 4. Push the schema to your database
 

@@ -30,7 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Migrated to Turborepo for monorepo management
+- Migrated to Bun workspaces for monorepo management
 - Switched to Bun runtime for faster builds and execution
 - Updated to Ultracite v6 for linting and formatting
 - Removed server-side Sentry tracking
