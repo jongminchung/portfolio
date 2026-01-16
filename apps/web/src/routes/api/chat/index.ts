@@ -2,11 +2,22 @@ import { openai } from "@ai-sdk/openai";
 import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, UIMessage } from "ai";
 import getTools from "~/lib/ai";
+import { env } from "~/lib/env/server";
 
 export const Route = createFileRoute("/api/chat/")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        if (!env.OPENAI_API_KEY) {
+          console.warn("AI api key is not configured. Skipping chat request.");
+          return new Response(
+            "AI api key is not configured. Skipping chat request.",
+            {
+              status: 200,
+            }
+          );
+        }
+
         const { messages }: { messages: UIMessage[] } = await request.json();
 
         const calendlyUrl =

@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { streamText } from "ai";
 import { z } from "zod";
 import { authMiddleware } from "~/lib/auth/middleware";
+import { env } from "~/lib/env/server";
 
 type AssistType =
   | "title"
@@ -103,6 +104,13 @@ export const Route = createFileRoute("/api/ai/blog-assist/")({
     middleware: [authMiddleware],
     handlers: {
       POST: async ({ request }) => {
+        if (!env.OPENAI_API_KEY) {
+          console.warn("AI service is not configured");
+          return new Response("AI service is not configured", {
+            status: 200,
+          });
+        }
+
         try {
           const body = await request.json();
 

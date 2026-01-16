@@ -19,7 +19,7 @@ export const env = createEnv({
     SENTRY_ORG: z.string().optional(),
     SENTRY_PROJECT: z.string().optional(),
     BLOB_READ_WRITE_TOKEN: z.string().optional(),
-    RAINDROP_ACCESS_TOKEN: z.string().min(1),
+    RAINDROP_ACCESS_TOKEN: z.string().min(1).optional(),
     OPENAI_API_KEY: z.string().min(1).optional(),
   },
   clientPrefix: "VITE_",

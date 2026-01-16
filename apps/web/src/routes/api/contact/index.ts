@@ -1,14 +1,26 @@
+/** biome-ignore-all lint/style/noNonNullAssertion: <explanation> */
 import { siteConfig } from "@acme/config";
 import { createFileRoute } from "@tanstack/react-router";
 import { Resend } from "resend";
 import { env } from "~/lib/env/server";
 
-const resend = new Resend(env.RESEND_API_KEY);
+let resend: Resend | undefined;
+if (env.RESEND_API_KEY) {
+  resend = new Resend(env.RESEND_API_KEY);
+}
 
 export const Route = createFileRoute("/api/contact/")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        if (resend === undefined) {
+          console.warn("resend api key is not configured, skipping email");
+          return new Response(
+            "resend api key is not configured, skipping email",
+            { status: 200 }
+          );
+        }
+
         if (!(env.RESEND_API_KEY && env.RESEND_FROM_EMAIL)) {
           return Response.json(
             { error: "Email service is not configured" },
@@ -30,7 +42,8 @@ export const Route = createFileRoute("/api/contact/")({
         }
 
         try {
-          const { data, error } = await resend.emails.send({
+          // biome-ignore lint/suspicious/noExtraNonNullAssertion: <resend config 현재 없어도 돌아갈 수 있도록 처리>
+          const { data, error } = await resend!!.emails.send({
             from: env.RESEND_FROM_EMAIL as string,
             replyTo: email,
             to: [siteConfig.links.mail],
