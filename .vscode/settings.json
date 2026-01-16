@@ -19,6 +19,12 @@
   },
   "editor.defaultFormatter": "biomejs.biome",
   "editor.formatOnSave": true,
+  "[markdown]": {
+    "editor.defaultFormatter": "prettier.prettier-vscode"
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "prettier.prettier-vscode"
+  },
   "[typescript]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
@@ -32,10 +38,10 @@
     "editor.defaultFormatter": "biomejs.biome"
   },
   "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "prettier.prettier-vscode"
   },
   "[jsonc]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "prettier.prettier-vscode"
   },
   "[html]": {
     "editor.defaultFormatter": "biomejs.biome"
